@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dino Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        #game {
+            width: 800px;
+            height: 200px;
+            border: 2px solid black;
+            overflow: hidden;
+            position: relative;
+            background-color: #fff;
+        }
+        #dino {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            background-image: url(https://static.vecteezy.com/system/resources/previews/001/208/470/original/airplane-png.png);
+            background-size: cover;
+        }
+        #cactus {
+            width: 30px;
+            height: 50px;
+            background-image: url(https://images.saymedia-content.com/.image/t_share/MTkyNzczMjc0NDIwMTkyNjI4/under-a-concrete-gray-sky.png);
+            background-size: cover;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            animation: move 2s infinite linear;
+        }
+        @keyframes move {
+            from { right: 0; }
+            to { right: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <div id="dino"></div>
+        <div id="cactus"></div>
+    </div>
+
+    <script>
+        const dino = document.getElementById("dino");
+        const cactus = document.getElementById("cactus");
+        let isJumping = false;
+        let isGameOver = false;
+
+        document.addEventListener("keydown", function(event) {
+            if (event.code === "Space" && !isJumping) {
+                jump();
+            }
+        });
+
+        function jump() {
+            let position = 0;
+            isJumping = true;
+            let upInterval = setInterval(function() {
+                if (position >= 150) {
+                    clearInterval(upInterval);
+                    let downInterval = setInterval(function() {
+                        if (position <= 0) {
+                            clearInterval(downInterval);
+                            isJumping = false;
+                        } else {
+                            position -= 20;
+                            dino.style.bottom = position + "px";
+                        }
+                    }, 20);
+                } else {
+                    position += 20;
+                    dino.style.bottom = position + "px";
+                }
+            }, 20);
+        }
+
+        function checkCollision() {
+            const dinoRect = dino.getBoundingClientRect();
+            const cactusRect = cactus.getBoundingClientRect();
+            
+            if (
+                dinoRect.right > cactusRect.left &&
+                dinoRect.left < cactusRect.right &&
+                dinoRect.bottom > cactusRect.top
+            ) {
+                isGameOver = true;
+                alert("Game Over!");
+                cactus.style.animation = "none";
+                cactus.style.display = "none";
+            }
+        }
+
+        setInterval(checkCollision, 10);
+    </script>
+</body>
+</html>
